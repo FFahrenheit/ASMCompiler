@@ -21,65 +21,23 @@ import javax.swing.JOptionPane;
 public class CleanCode extends javax.swing.JFrame 
 {
     private File source; 
-    private String originalCode;
-    private String cleanCode;
     
     public CleanCode(File f) 
     {
         initComponents();
         source = f;
-        readCode();
-        originalCodeText.setText(originalCode);
-        cleanCodeText.setText(cleanCode);
-    }
-    
-    private Boolean readCode()
-    {
-        String line;
-        originalCode = "";
-        cleanCode = "";
-        Boolean finished = false;
-        try 
-        {
-            BufferedReader reader = new BufferedReader(new FileReader(source));
-            while ((line = reader.readLine()) != null) {
-                originalCode += line+"\n";
-                line = line.trim();
-                if(line.toLowerCase().equals("end"))
-                {
-                    finished = true;
-                    continue;
-                }
-                if(!finished)
-                {
-                    String[] codes = line.split(";");
-                    line = codes[0]; //Se queda con todo lo que haya antes del comentario
-                    if(line.equals(""))   //Comentario completo
-                    {
-                        continue;
-                    }
-                    cleanCode += line + "\n";
-                }
-            }
-        }
-        catch (FileNotFoundException ex) 
-        {
-            System.out.println("No se pudo leer");
-        }
-        catch (IOException ex) 
-        {
-            System.out.println("Error al leer");
-        }
-        if(!finished)
+        CodeCleaner clean = new CodeCleaner(source);
+        originalCodeText.setText(clean.getOriginalCode());
+        cleanCodeText.setText(clean.getCleanCode());
+        if(!clean.getFinished())
         {
             JOptionPane.showMessageDialog(this,
                     "No se encontró el fin del codigo",
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);            
-            return false;
+                    JOptionPane.ERROR_MESSAGE); 
         }
-        return true;
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
