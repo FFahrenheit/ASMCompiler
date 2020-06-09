@@ -40,17 +40,20 @@ public class CodeCleaner
                         continue;
                     }
                     
-                    codes = line.split(":");
-                    if(codes.length == 1)
+                    if(line.contains(":"))
                     {
-                        line = codes[0];
-                    }
-                    else
-                    {
-                        cleanCode += codes[0] + ":" + "\n";
-                        line = codes[1];
-                    }               
-                    cleanCode += line + "\n";
+                        codes = line.split(":");
+                        if(codes.length == 1)
+                        {
+                            line = codes[0]+":";
+                        }
+                        else
+                        {
+                            cleanCode += codes[0].trim() + ":" + "\n";
+                            line = codes[1];
+                        }                   
+                    }                    
+                    cleanCode += line.trim() + "\n";
                 }
             }
         }

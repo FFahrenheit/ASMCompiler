@@ -31,6 +31,7 @@ public class CleanCode extends javax.swing.JFrame
         cleanCodeText.setText(clean.getCleanCode());
         if(!clean.getFinished())
         {
+            cleanCodeText.setText("ERROR: No se encontro el fin del codigo"+"\n"+clean.getCleanCode());
             JOptionPane.showMessageDialog(this,
                     "No se encontró el fin del codigo",
                     "Error",
