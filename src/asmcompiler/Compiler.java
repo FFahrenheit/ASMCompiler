@@ -34,6 +34,7 @@ public class Compiler
                 if(command.isValid())
                 {
                     commands.add(command);
+                    instructionCounter++;
                 }
                 else
                 {

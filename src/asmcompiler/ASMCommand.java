@@ -38,13 +38,52 @@ public class ASMCommand
                 isValid = verifyADD(command);
                 break;
             case "SUB":
+                isValid = verifySUB(command);
+                break;
             case "MUL":
+                isValid = verifyMUL(command);
+                break;
             case "DIV":
-            case "MOD":
-            case "CMP":
+                isValid = verifyDIV(command);
+            //case "MOD":
+            case "INC":
+                isValid = verifyOneArgumentRegister(command, "A4");
+                break;
+            case "DEC":
+                isValid = verifyOneArgumentRegister(command, "A5");
+                break;
+            case "NOT":
+                isValid = verifyOneArgumentRegister(command, "AD");
+                break;
+            case "ROL":
+                isValid = verifyOneArgumentRegister(command, "9A");
+                break;
+            case "ROR":
+                isValid = verifyOneArgumentRegister(command, "9B");
+                break;
+            case "SHL":
+                isValid = verifyOneArgumentRegister(command, "9C");
+                break;
+            case "SHR":
+                isValid = verifyOneArgumentRegister(command, "9D");
+                break;
+            case "PUSH":
+                isValid = verifyOneArgumentRegister(command, "E0");
+                break;
+            case "POP":
+                isValid = verifyOneArgumentRegister(command, "E1");
+                break;
             case "AND":
+                isValid = verifyAND(command);
+                break;
             case "OR":
-            case "XOR":
+                isValid = verifyOR(command);
+                break;
+            case "XOR":                
+                isValid = verifyXOR(command);
+                break;
+            case "CMP":
+                break;
             default:
                 isValid = false;
         }
@@ -227,11 +266,88 @@ public class ASMCommand
         return false;
     }
     
+    private Boolean verifyDIV(String command)
+    {
+                if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0]= "A3";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "B6";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);            
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;
+    }
+    
+    private Boolean verifyMUL(String command)
+    {
+                if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0]= "A2";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "B2";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);            
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;
+    }
 
     private Boolean verifySUB(String command)
     {
-        return false;
+        if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0]= "A1";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "B1";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);            
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;    
     }
+    
+    
     private Boolean verifyADD(String command)
     {
         if(!verifyTwoArguments(command))
@@ -267,5 +383,103 @@ public class ASMCommand
         }
         System.out.println("");
     }
+    
+    private Boolean verifyOneArgumentRegister(String command, String Hex)
+    {
+        byteCount = 2;
+        hexByte = new String[2];
+        String arg = command.substring(command.length()+1).trim();
+        if(isRegister(arg))
+        {
+            hexByte[0] = Hex;
+            hexByte[1] = getRegisterValue(arg);
+            return true;
+        }
+        if(error.equals(""))
+        {
+            error = "El argumento no es valido";
+        }
+        return false;
+    }
+    
+    private Boolean verifyOR(String command)
+    {
+        if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0]= "AB";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "BB";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);            
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;
+    }
+    
+    private Boolean verifyAND(String command)
+    {
+        if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0]= "AA";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "BA";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);            
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;
+    }
+    
+    private Boolean verifyXOR(String command)
+    {
+        if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0]= "AC";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "BC";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);            
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;
+    }
 }
-
