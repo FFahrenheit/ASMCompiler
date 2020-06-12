@@ -28,6 +28,7 @@ public class CodeCleaner
                 if(line.toLowerCase().equals("end"))
                 {
                     finished = true;
+                    cleanCode+=line;
                     continue;
                 }
                 if(!finished)

@@ -36,6 +36,7 @@ public class CleanCode extends javax.swing.JFrame
                     "No se encontró el fin del codigo",
                     "Error",
                     JOptionPane.ERROR_MESSAGE); 
+            hexCodeButton.setEnabled(false);
         }
     }
     
@@ -55,6 +56,7 @@ public class CleanCode extends javax.swing.JFrame
         originalCodeText = new java.awt.TextArea();
         cleanCodeScroll = new javax.swing.JScrollPane();
         cleanCodeText = new java.awt.TextArea();
+        hexCodeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -65,6 +67,13 @@ public class CleanCode extends javax.swing.JFrame
         originalCodeScroll.setViewportView(originalCodeText);
 
         cleanCodeScroll.setViewportView(cleanCodeText);
+
+        hexCodeButton.setText("Compilar y obtener .HEX");
+        hexCodeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                hexCodeButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -82,6 +91,10 @@ public class CleanCode extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
                 .addComponent(cleanCodeScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(22, 22, 22))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(hexCodeButton)
+                .addGap(265, 265, 265))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -91,19 +104,27 @@ public class CleanCode extends javax.swing.JFrame
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(originalCodeScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(originalCodeScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
                     .addComponent(cleanCodeScroll))
-                .addContainerGap())
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(hexCodeButton)
+                .addContainerGap(18, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void hexCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hexCodeButtonActionPerformed
+        System.out.println("Se presionó...");
+        Compiler compiler = new Compiler(cleanCodeText.getText());
+    }//GEN-LAST:event_hexCodeButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JScrollPane cleanCodeScroll;
     private java.awt.TextArea cleanCodeText;
+    private javax.swing.JButton hexCodeButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane originalCodeScroll;
