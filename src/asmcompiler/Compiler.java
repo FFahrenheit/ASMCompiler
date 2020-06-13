@@ -15,9 +15,9 @@ public class Compiler
     public Compiler(String code)
     {
         lines = code.split("\n");
-        for (int i = 0; i < lines.length; i++) 
+        for (int i = 0; i < lines.length; i++)    //Lee las lineas, separa labels de instrucciones
         {
-            if(lines[i].contains(":"))  //Si es comentario...
+            if(lines[i].contains(":"))  //Si es label...
             {
                 String labelName = isValidLabel(lines[i]);
                 if(labelName!=null)
@@ -38,15 +38,17 @@ public class Compiler
                 }
                 else
                 {
-                    System.out.println(command.getError());
+                    System.out.println("Error en la linea " + (i+1) +"("+command.getCommand()+"): "+command.getError());
                 }
             }
         }
+        System.out.println("---- LABELS EXISTENTES Y ANTES DE QUE INSTRUCCION ----");
         for (int i = 0; i < labels.size(); i++) {
-            System.out.println(labels.get(i).getName());
+            System.out.println(labels.get(i).getName()+ "Antes de la instruccion: "+labels.get(i).getInstruction());
         }
-        System.out.println("HEX SO FAR -------");
+        System.out.println("------- HEX SO FAR -------");
         for (int i = 0; i < commands.size(); i++) {
+            System.out.print("["+i+"]");
             commands.get(i).showHex();
         }
     }

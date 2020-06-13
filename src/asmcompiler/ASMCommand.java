@@ -20,6 +20,11 @@ public class ASMCommand
         return this.isJump;
     }
     
+    public String getCommand()
+    {
+        return this.line;
+    }
+    
     public String getLabel()
     {
         return hexByte[1];
