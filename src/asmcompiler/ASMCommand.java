@@ -83,6 +83,46 @@ public class ASMCommand
                 isValid = verifyXOR(command);
                 break;
             case "CMP":
+                isValid = verifyCMP(command);
+                break;
+            case "RET":
+                isValid = verifyNoArgument(command,mnemonic,"CB");
+                break;
+            case "IRET":
+                isValid = verifyNoArgument(command,mnemonic,"CD");
+                break;
+            case "PUSHF":
+                isValid = verifyNoArgument(command,mnemonic,"EA");
+                break;
+            case "POPF":
+                isValid = verifyNoArgument(command,mnemonic,"EB");
+                break;
+            case "CLO":
+                isValid = verifyNoArgument(command,mnemonic,"FE");
+                break;
+            case "HALT":
+                isValid = verifyNoArgument(command,mnemonic,"00");
+                break;
+            case "NOP":
+                isValid = verifyNoArgument(command,mnemonic,"FF");
+                break;
+            case "STI":
+                isValid = verifyNoArgument(command,mnemonic,"FC");
+                break;
+            case "CLI":
+                isValid = verifyNoArgument(command,mnemonic,"FD");
+                break;
+            case "CALL": //Funciona con una direccion de RAM, pero bastante complejo
+                isValid = verifyOneHexArgumentRegister(command, "CA");
+                break;
+            case "INT": //Igual que CALL
+                isValid = verifyOneHexArgumentRegister(command, "CC");
+                break;
+            case "IN":
+                isValid = verify8Argument(command, "F0");
+                break;
+            case "OUT":
+                isValid = verify8Argument(command,"F1");
                 break;
             default:
                 isValid = false;
@@ -384,14 +424,56 @@ public class ASMCommand
         System.out.println("");
     }
     
-    private Boolean verifyOneArgumentRegister(String command, String Hex)
+    private Boolean verify8Argument(String command, String Hex)
+    {
+        byteCount = 2;
+        hexByte = new String[2];
+        String arg = command.substring(command.length()+1).trim();
+        if(isHexValid(arg))
+        {
+            if(convertHex(arg)>=0 && convertHex(arg)<=8)
+            {
+                hexByte[0] = Hex;
+                hexByte[1] = getAbsValue(arg);
+                return true;   
+            }
+            else
+            {
+                error = "Los argumentos estan fuera de rango";
+            }
+        }
+        if(error.equals(""))
+        {
+            error = "El argumento no es valido";
+        }
+        return false;    }
+    
+    private Boolean verifyOneHexArgumentRegister(String command, String hex)
+    {
+        byteCount = 2;
+        hexByte = new String[2];
+        String arg = command.substring(command.length()+1).trim();
+        if(isHexValid(arg))
+        {
+            hexByte[0] = hex;
+            hexByte[1] = getAbsValue(arg);
+            return true;
+        }
+        if(error.equals(""))
+        {
+            error = "El argumento no es valido";
+        }
+        return false;
+    }
+    
+    private Boolean verifyOneArgumentRegister(String command, String hex)
     {
         byteCount = 2;
         hexByte = new String[2];
         String arg = command.substring(command.length()+1).trim();
         if(isRegister(arg))
         {
-            hexByte[0] = Hex;
+            hexByte[0] = hex;
             hexByte[1] = getRegisterValue(arg);
             return true;
         }
@@ -479,6 +561,52 @@ public class ASMCommand
         if(!error.equals(""))
         {
             error = "Los argumentos no coinciden";
+        }
+        return false;
+    }
+    
+    private Boolean verifyCMP(String command)
+    {
+        if(!verifyTwoArguments(command))
+        {
+            return false;
+        }
+        String[] args = getArguments(command);
+        if(isRegister(args[0]) && isRegister(args[1]))
+        {
+            hexByte[0] = "DA";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isHexValid(args[1]))
+        {
+            hexByte[0] = "DB";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(args[1]);
+            return true;
+        }
+        else if(isRegister(args[0]) && isPointer(args[1]) && isHexValid(getPointer(args[1])))
+        {
+            hexByte[0] = "DC";
+            hexByte[1] = getAbsValue(args[0]);
+            hexByte[2] = getAbsValue(getPointer(args[1]));
+            return true;
+        }
+        if(!error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
+        }
+        return false;
+   }
+    
+    private Boolean verifyNoArgument(String command, String mnemonic, String hex)
+    {
+        if(command.trim().equals(mnemonic))
+        {
+            hexByte = new String[1];
+            hexByte[0] = hex;
+            return true;
         }
         return false;
     }
