@@ -20,6 +20,11 @@ public class ASMCommand
         return this.isJump;
     }
     
+    public Integer getSize()
+    {
+        return this.byteCount;
+    }
+    
     public String getCommand()
     {
         return this.line;
@@ -30,9 +35,13 @@ public class ASMCommand
         return hexByte[1];
     }
     
-    public void setJump(Integer value)
+    public void setJump(Integer jump)
     {
-        return;
+        if(jump<0)
+        {
+            jump = 256 + (jump);
+        }
+        hexByte[1] = getAbsValue(Integer.toHexString(jump).toUpperCase());
     }
     
     public String getError()
@@ -711,6 +720,7 @@ public class ASMCommand
     {
         byteCount = 2;
         hexByte = new String[2];
+        isJump = true;
         String arg = command.substring(command.indexOf(" ")+1).trim();
         if(isValidLabel(arg))
         {
@@ -736,5 +746,5 @@ public class ASMCommand
             return false;
         }
         return true;
-    }
+    }    
 }

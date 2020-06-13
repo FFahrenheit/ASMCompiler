@@ -14,6 +14,7 @@ public class Compiler
     
     public Compiler(String code)
     {
+        Boolean compilable = true;
         lines = code.split("\n");
         for (int i = 0; i < lines.length; i++)    //Lee las lineas, separa labels de instrucciones
         {
@@ -25,6 +26,11 @@ public class Compiler
                     if(!isExistingLabel(labelName))
                     {
                         labels.add(new ASMLabel(labelName,instructionCounter));
+                    }
+                    else
+                    {
+                        warnings += "La etiqueta "+labelName+" ya existe\n";
+                        compilable = false;
                     }
                 }
             }
@@ -38,6 +44,7 @@ public class Compiler
                 }
                 else
                 {
+                    compilable = false;
                     System.out.println("Error en la linea " + (i+1) +"("+command.getCommand()+"): "+command.getError());
                 }
             }
@@ -51,6 +58,67 @@ public class Compiler
             System.out.print("["+i+"]");
             commands.get(i).showHex();
         }
+        for (int i = 0; i < commands.size(); i++) 
+        {
+            if(commands.get(i).isJump())
+            {
+                ASMCommand command = commands.get(i);
+                String label = command.getLabel();
+                Integer targetPosition = getLabelPosition(label);
+                if(targetPosition >= 0)
+                {
+                    Integer originPosition = getPosition(i);
+                    Integer jump = targetPosition - originPosition;
+                    if(jump<=127 && jump>=-128)
+                    {
+                        command.setJump(jump);
+                    }
+                    else
+                    {
+                        compilable = false;
+                        warnings += "El salto de la instruccion "+ (originPosition+1) + " a la "+(targetPosition+1)+" es muy grande";
+                    }
+                }
+                else 
+                {
+                    compilable = false;
+                    warnings += "No se encontro la etiqueta "+ label+"\n";
+                }
+            }
+        }
+        if(compilable)
+        {
+            for (int i = 0; i < commands.size(); i++) {
+            System.out.print("["+i+"]");
+            commands.get(i).showHex();
+        }   
+        }
+        else
+        {
+            System.out.println(warnings);
+        }
+    }
+    
+    private Integer getLabelPosition(String label)
+    {
+        for (int i = 0; i < labels.size(); i++) 
+        {
+            if(labels.get(i).getName().equals(label))
+            {
+                return getPosition(labels.get(i).getInstruction());
+            }
+        }
+        return -1;
+    }
+    
+    private Integer getPosition(int position)
+    {
+        Integer count=0;
+        for (int i = 0; i <position ; i++) 
+        {
+            count += commands.get(i).getSize() + commands.get(i).getOffset();
+        }
+        return count;
     }
     
     private Boolean isExistingLabel(String label)
