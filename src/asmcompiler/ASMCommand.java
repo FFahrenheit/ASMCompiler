@@ -12,6 +12,23 @@ public class ASMCommand
     private Boolean isValid = false;
     private String error="";    
     private String line;
+    private Boolean isJump = false;
+    private Integer offset = 0;
+    
+    public Boolean isJump()
+    {
+        return this.isJump;
+    }
+    
+    public String getLabel()
+    {
+        return hexByte[1];
+    }
+    
+    public void setJump(Integer value)
+    {
+        return;
+    }
     
     public String getError()
     {
@@ -123,6 +140,33 @@ public class ASMCommand
                 break;
             case "OUT":
                 isValid = verify8Argument(command,"F1");
+                break;
+            case "DB":
+                isValid = verifyDB(command); 
+                break;
+            case "ORG":
+                isValid = verifyORG(command);
+                break;
+            case "JMP":
+                isValid = prepareJump(command,"C0");
+                break;
+            case "JZ":
+                isValid = prepareJump(command,"C1");
+                break;
+            case "JNZ":
+                isValid = prepareJump(command,"C2");
+                break;
+            case "JS":
+                isValid = prepareJump(command,"C3");
+                break;
+            case "JNS":
+                isValid = prepareJump(command,"C4");
+                break;
+            case "JO":
+                isValid = prepareJump(command,"C5");
+                break;
+            case "JNO":
+                isValid = prepareJump(command,"C6");
                 break;
             default:
                 isValid = false;
@@ -428,7 +472,7 @@ public class ASMCommand
     {
         byteCount = 2;
         hexByte = new String[2];
-        String arg = command.substring(command.length()+1).trim();
+        String arg = command.substring(command.indexOf(" ")+1).trim();
         if(isHexValid(arg))
         {
             if(convertHex(arg)>=0 && convertHex(arg)<=8)
@@ -452,7 +496,7 @@ public class ASMCommand
     {
         byteCount = 2;
         hexByte = new String[2];
-        String arg = command.substring(command.length()+1).trim();
+        String arg = command.substring(command.indexOf(" ")+1).trim();
         if(isHexValid(arg))
         {
             hexByte[0] = hex;
@@ -470,7 +514,7 @@ public class ASMCommand
     {
         byteCount = 2;
         hexByte = new String[2];
-        String arg = command.substring(command.length()+1).trim();
+        String arg = command.substring(command.indexOf(" ")+1).trim();
         if(isRegister(arg))
         {
             hexByte[0] = hex;
@@ -604,10 +648,88 @@ public class ASMCommand
     {
         if(command.trim().equals(mnemonic))
         {
+            byteCount = 1;
             hexByte = new String[1];
             hexByte[0] = hex;
             return true;
         }
         return false;
+    }
+    
+    private Boolean verifyDB(String command)
+    {
+        String arg = command.substring(command.indexOf(" ")+1).trim();
+        if(isHexValid(arg))
+        {
+            hexByte = new String[1];
+            byteCount = 1;
+            hexByte[0] = getAbsValue(arg);
+            return true;
+        }
+        if(arg.startsWith("\"") && arg.endsWith("\""))
+        {
+            arg = arg.substring(1, arg.length()-1);
+            byteCount = arg.length();
+            if(byteCount <= 0)
+            {
+                error = "Instruccion ignorada";
+                return false;
+            }
+            hexByte = new String[byteCount];  //Iterar
+            for(int i=0; i<arg.length();i++)
+            {
+                int value = (int) arg.charAt(i);
+                hexByte[i] = getAbsValue(Integer.toHexString(value));
+            }
+        }
+        return false;
+    }
+    
+    private Boolean verifyORG(String command)
+    {
+        byteCount = 0;
+        String arg = command.substring(command.indexOf(" ")+1).trim();
+        if(isHexValid(arg))
+        {
+            offset = convertHex(arg);
+            return true;
+        }
+        return false;
+    }
+    
+    public Integer getOffset()
+    {
+        return this.offset;
+    }
+
+    private Boolean prepareJump(String command, String hex) 
+    {
+        byteCount = 2;
+        hexByte = new String[2];
+        String arg = command.substring(command.indexOf(" ")+1).trim();
+        if(isValidLabel(arg))
+        {
+            hexByte[0] = hex;
+            hexByte[1] = arg; //Temporal...
+            return true;
+        }
+        return false;
+    }
+    
+    private Boolean isValidLabel(String label)
+    {
+        if(label.isEmpty())
+        {
+            return false;
+        }
+        if(label.contains(":") || label.contains(" "))
+        {
+            return false;
+        }
+        if(!Character.isAlphabetic(label.charAt(0)))
+        {
+            return false;
+        }
+        return true;
     }
 }

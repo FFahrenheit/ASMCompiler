@@ -52,7 +52,7 @@ public class CodeCleaner
                         {
                             cleanCode += codes[0].trim() + ":" + "\n";
                             line = codes[1];
-                        }                   
+                        }
                     }                    
                     cleanCode += line.trim() + "\n";
                 }
