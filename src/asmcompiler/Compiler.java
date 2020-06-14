@@ -1,6 +1,8 @@
 package asmcompiler;
 
+import java.awt.TextArea;
 import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 
 public class Compiler 
@@ -9,11 +11,12 @@ public class Compiler
     private ArrayList<ASMCommand> commands = new ArrayList<>();
     private String[] lines; 
     private Integer instructionCounter = 0;
-    private String warnings = "";
-    private Integer byteCounter;
+    private TextArea logger;
     
-    public Compiler(String code)
+    public Compiler(String code, TextArea logger)
     {
+        this.logger = logger;
+        log("Compilando ...");
         Boolean compilable = true;
         lines = code.split("\n");
         for (int i = 0; i < lines.length; i++)    //Lee las lineas, separa labels de instrucciones
@@ -29,9 +32,13 @@ public class Compiler
                     }
                     else
                     {
-                        warnings += "La etiqueta "+labelName+" ya existe\n";
+                        log("La etiqueta "+labelName+" ya existe, se repite en la linea "+(i+1));
                         compilable = false;
                     }
+                }
+                else 
+                {
+                    log("No se encontro nombre valido para la etiqueta en la linea "+(i+1));
                 }
             }
             if(lines[i].contains(" "))
@@ -45,18 +52,9 @@ public class Compiler
                 else
                 {
                     compilable = false;
-                    System.out.println("Error en la linea " + (i+1) +"("+command.getCommand()+"): "+command.getError());
+                    log("Error en la linea " + (i+1) +" ("+command.getCommand()+"): "+command.getError());
                 }
             }
-        }
-        System.out.println("---- LABELS EXISTENTES Y ANTES DE QUE INSTRUCCION ----");
-        for (int i = 0; i < labels.size(); i++) {
-            System.out.println(labels.get(i).getName()+ "Antes de la instruccion: "+labels.get(i).getInstruction());
-        }
-        System.out.println("------- HEX SO FAR -------");
-        for (int i = 0; i < commands.size(); i++) {
-            System.out.print("["+i+"]");
-            commands.get(i).showHex();
         }
         for (int i = 0; i < commands.size(); i++) 
         {
@@ -76,26 +74,32 @@ public class Compiler
                     else
                     {
                         compilable = false;
-                        warnings += "El salto de la instruccion "+ (originPosition+1) + " a la "+(targetPosition+1)+" es muy grande";
+                        log("El salto de la instruccion en la linea"+ (originPosition+1) + " a la "+(targetPosition+1)+" es muy grande");
                     }
                 }
                 else 
                 {
                     compilable = false;
-                    warnings += "No se encontro la etiqueta "+ label+"\n";
+                    log("No se encontro la etiqueta "+ label+" para la instruccion en la linea "+(i+1));
                 }
             }
         }
         if(compilable)
         {
-            for (int i = 0; i < commands.size(); i++) {
-            System.out.print("["+i+"]");
-            commands.get(i).showHex();
-        }   
+            log("Compilacion completada... Abriendo hexadecimal");
+            for (int i = 0; i < commands.size(); i++) 
+            {
+                System.out.print("["+i+"]");
+                commands.get(i).showHex();
+            }   
         }
         else
         {
-            System.out.println(warnings);
+            log("Compilacion fallida");
+            JOptionPane.showMessageDialog(null,
+            "El codigo no es compilable, observe el logger",
+            "Error",
+            JOptionPane.ERROR_MESSAGE); 
         }
     }
     
@@ -103,7 +107,7 @@ public class Compiler
     {
         for (int i = 0; i < labels.size(); i++) 
         {
-            if(labels.get(i).getName().equals(label))
+            if(labels.get(i).getName().toUpperCase().equals(label.toUpperCase()))
             {
                 return getPosition(labels.get(i).getInstruction());
             }
@@ -125,7 +129,7 @@ public class Compiler
     {
         for (int i = 0; i < labels.size(); i++) 
         {
-            if(labels.get(i).getName().equals(label))
+            if(labels.get(i).getName().toUpperCase().equals(label.toUpperCase()))
             {
                 return true;
             }
@@ -150,8 +154,13 @@ public class Compiler
         }
         if(label.charAt(0)=='_')
         {
-            warnings += "La etiqueta _: no es amigable\n";
+            log("ADVERTENCIA: La etiqueta _: no es amigable");
         }
         return label;
+    }
+    
+    private void log(String log)
+    {
+        this.logger.setText(this.logger.getText()+log+"\n");
     }
 }

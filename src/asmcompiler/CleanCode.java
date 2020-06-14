@@ -5,14 +5,12 @@
  */
 package asmcompiler;
 
-import java.io.BufferedReader;
+import java.awt.TextArea;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 
 /**
  *
@@ -29,9 +27,11 @@ public class CleanCode extends javax.swing.JFrame
         CodeCleaner clean = new CodeCleaner(source);
         originalCodeText.setText(clean.getOriginalCode());
         cleanCodeText.setText(clean.getCleanCode());
+        cleanCodeText.setEditable(false);
+        originalCodeText.setEditable(false);
         if(!clean.getFinished())
         {
-            cleanCodeText.setText("ERROR: No se encontro el fin del codigo"+"\n"+clean.getCleanCode());
+            loggerText.setText("ERROR: No se encontro el fin del codigo"+"\n");
             JOptionPane.showMessageDialog(this,
                     "No se encontró el fin del codigo",
                     "Error",
@@ -52,11 +52,12 @@ public class CleanCode extends javax.swing.JFrame
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        originalCodeScroll = new javax.swing.JScrollPane();
-        originalCodeText = new java.awt.TextArea();
-        cleanCodeScroll = new javax.swing.JScrollPane();
         cleanCodeText = new java.awt.TextArea();
         hexCodeButton = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        originalCodeText = new java.awt.TextArea();
+        loggerText = new java.awt.TextArea();
+        anotherCode = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -64,14 +65,19 @@ public class CleanCode extends javax.swing.JFrame
 
         jLabel2.setText("Codigo limpio");
 
-        originalCodeScroll.setViewportView(originalCodeText);
-
-        cleanCodeScroll.setViewportView(cleanCodeText);
-
         hexCodeButton.setText("Compilar y obtener .HEX");
         hexCodeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 hexCodeButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("Errores y advertencias");
+
+        anotherCode.setText("Abrir otro");
+        anotherCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                anotherCodeActionPerformed(evt);
             }
         });
 
@@ -85,16 +91,26 @@ public class CleanCode extends javax.swing.JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel2)
                 .addGap(147, 147, 147))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGap(29, 29, 29)
-                .addComponent(originalCodeScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                .addComponent(cleanCodeScroll, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(22, 22, 22))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(originalCodeText, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(cleanCodeText, javax.swing.GroupLayout.PREFERRED_SIZE, 305, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(hexCodeButton)
-                .addGap(265, 265, 265))
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(hexCodeButton)
+                        .addGap(180, 180, 180)
+                        .addComponent(anotherCode))
+                    .addComponent(loggerText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 668, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,13 +119,19 @@ public class CleanCode extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(originalCodeScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 408, Short.MAX_VALUE)
-                    .addComponent(cleanCodeScroll))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(hexCodeButton)
-                .addContainerGap(18, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(originalCodeText, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cleanCodeText, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(loggerText, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(hexCodeButton)
+                    .addComponent(anotherCode))
+                .addContainerGap())
         );
 
         pack();
@@ -117,17 +139,43 @@ public class CleanCode extends javax.swing.JFrame
 
     private void hexCodeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_hexCodeButtonActionPerformed
         System.out.println("Se presionó...");
-        Compiler compiler = new Compiler(cleanCodeText.getText());
+        Compiler compiler = new Compiler(cleanCodeText.getText(),(TextArea)loggerText);
     }//GEN-LAST:event_hexCodeButtonActionPerformed
+
+    private void anotherCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_anotherCodeActionPerformed
+        JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        jfc.setDialogTitle("Seleccione el codigo fuente a compilar: ");
+        
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Codigo ensamblador","asm");
+        jfc.setFileFilter(filter);
+        
+        int returnValue = jfc.showOpenDialog(null);
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) 
+        {
+            File selectedFile = jfc.getSelectedFile();
+            System.out.println(selectedFile.getAbsolutePath());
+            CleanCode window = new CleanCode(selectedFile);
+            window.setVisible(true);
+            this.dispose();
+        }
+        else 
+        {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione un archivo valido",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        }    }//GEN-LAST:event_anotherCodeActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JScrollPane cleanCodeScroll;
+    private javax.swing.JButton anotherCode;
     private java.awt.TextArea cleanCodeText;
     private javax.swing.JButton hexCodeButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane originalCodeScroll;
+    private javax.swing.JLabel jLabel3;
+    private java.awt.TextArea loggerText;
     private java.awt.TextArea originalCodeText;
     // End of variables declaration//GEN-END:variables
 }

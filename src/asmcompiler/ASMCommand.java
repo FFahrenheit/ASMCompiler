@@ -184,6 +184,12 @@ public class ASMCommand
                 break;
             default:
                 isValid = false;
+                error = "Instruccion invalida";
+                break;
+        }
+        if(!isValid && error.equals(""))
+        {
+            error = "Los argumentos no coinciden";
         }
     }
     /***
@@ -223,7 +229,7 @@ public class ASMCommand
         }
         catch(NumberFormatException ex)
         {
-            error = "El valor no es hexadecimal";
+            error = "El valor no esta en el formato correcto";
             return -1;
         } 
         return v;
@@ -336,7 +342,6 @@ public class ASMCommand
                     hexByte[3] = getAbsValue(value);
                     return true;
                 }
-
             }
         }
         else if(isPointer(args[0]))
@@ -357,16 +362,12 @@ public class ASMCommand
                 return true;
             }
         }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
-        }
         return false;
     }
     
     private Boolean verifyDIV(String command)
     {
-                if(!verifyTwoArguments(command))
+        if(!verifyTwoArguments(command))
         {
             return false;
         }
@@ -382,18 +383,15 @@ public class ASMCommand
         {
             hexByte[0] = "B6";
             hexByte[1] = getAbsValue(args[0]);
-            hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            hexByte[2] = getAbsValue(args[1]);       
+            return true;
         }
         return false;
     }
     
     private Boolean verifyMUL(String command)
     {
-                if(!verifyTwoArguments(command))
+        if(!verifyTwoArguments(command))
         {
             return false;
         }
@@ -409,11 +407,8 @@ public class ASMCommand
         {
             hexByte[0] = "B2";
             hexByte[1] = getAbsValue(args[0]);
-            hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            hexByte[2] = getAbsValue(args[1]);     
+            return true;
         }
         return false;
     }
@@ -436,11 +431,8 @@ public class ASMCommand
         {
             hexByte[0] = "B1";
             hexByte[1] = getAbsValue(args[0]);
-            hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            hexByte[2] = getAbsValue(args[1]);  
+            return true;
         }
         return false;    
     }
@@ -464,11 +456,8 @@ public class ASMCommand
         {
             hexByte[0] = "B0";
             hexByte[1] = getAbsValue(args[0]);
-            hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            hexByte[2] = getAbsValue(args[1]);    
+            return true;
         }
         return false;
     }
@@ -500,11 +489,8 @@ public class ASMCommand
                 error = "Los argumentos estan fuera de rango";
             }
         }
-        if(error.equals(""))
-        {
-            error = "El argumento no es valido";
-        }
-        return false;    }
+        return false;    
+    }
     
     private Boolean verifyOneHexArgumentRegister(String command, String hex)
     {
@@ -516,10 +502,6 @@ public class ASMCommand
             hexByte[0] = hex;
             hexByte[1] = getAbsValue(arg);
             return true;
-        }
-        if(error.equals(""))
-        {
-            error = "El argumento no es valido";
         }
         return false;
     }
@@ -534,10 +516,6 @@ public class ASMCommand
             hexByte[0] = hex;
             hexByte[1] = getRegisterValue(arg);
             return true;
-        }
-        if(error.equals(""))
-        {
-            error = "El argumento no es valido";
         }
         return false;
     }
@@ -560,11 +538,8 @@ public class ASMCommand
         {
             hexByte[0] = "BB";
             hexByte[1] = getAbsValue(args[0]);
-            hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            hexByte[2] = getAbsValue(args[1]);
+            return true;            
         }
         return false;
     }
@@ -587,11 +562,8 @@ public class ASMCommand
         {
             hexByte[0] = "BA";
             hexByte[1] = getAbsValue(args[0]);
-            hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            hexByte[2] = getAbsValue(args[1]);         
+            return true;
         }
         return false;
     }
@@ -615,10 +587,7 @@ public class ASMCommand
             hexByte[0] = "BC";
             hexByte[1] = getAbsValue(args[0]);
             hexByte[2] = getAbsValue(args[1]);            
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
+            return true;
         }
         return false;
     }
@@ -650,10 +619,6 @@ public class ASMCommand
             hexByte[1] = getAbsValue(args[0]);
             hexByte[2] = getAbsValue(getPointer(args[1]));
             return true;
-        }
-        if(!error.equals(""))
-        {
-            error = "Los argumentos no coinciden";
         }
         return false;
    }
@@ -695,6 +660,7 @@ public class ASMCommand
                 int value = (int) arg.charAt(i);
                 hexByte[i] = getAbsValue(Integer.toHexString(value));
             }
+            return true;
         }
         return false;
     }

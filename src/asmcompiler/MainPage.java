@@ -87,7 +87,7 @@ public class MainPage extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
-        jfc.setDialogTitle("Seleccione el codigo fuente a compular: ");
+        jfc.setDialogTitle("Seleccione el codigo fuente a compilar: ");
         
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Codigo ensamblador","asm");
         jfc.setFileFilter(filter);
