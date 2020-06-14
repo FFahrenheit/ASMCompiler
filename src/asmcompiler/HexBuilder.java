@@ -38,7 +38,7 @@ public class HexBuilder
             {
                 if(j==0)
                 {
-                    cells[i][j] = "0"+Integer.toHexString(i).toUpperCase();
+                    cells[i][j] = Integer.toHexString(i).toUpperCase()+"0";
                 }
                 else 
                 {

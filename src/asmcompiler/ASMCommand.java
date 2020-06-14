@@ -64,7 +64,7 @@ public class ASMCommand
         command = command.toUpperCase();
         this.line = command;
         String mnemonic = command.substring(0,command.indexOf(" "));
-        System.out.println(command);
+//        System.out.println(command);
         switch(mnemonic)
         {
             case "MOV":
