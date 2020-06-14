@@ -87,11 +87,8 @@ public class Compiler
         if(compilable)
         {
             log("Compilacion completada... Abriendo hexadecimal");
-            for (int i = 0; i < commands.size(); i++) 
-            {
-                System.out.print("["+i+"]");
-                commands.get(i).showHex();
-            }   
+            HexTable hb = new HexTable(commands);
+            hb.setVisible(true);
         }
         else
         {

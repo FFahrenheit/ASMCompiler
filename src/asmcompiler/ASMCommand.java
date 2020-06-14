@@ -20,6 +20,11 @@ public class ASMCommand
         return this.isJump;
     }
     
+    public String getHexByte(int pos)
+    {
+        return pos >= byteCount ? "" : hexByte[pos];
+    }
+    
     public Integer getSize()
     {
         return this.byteCount;
